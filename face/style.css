@@ -95,6 +95,7 @@ body {
   }
   .dropdown-list a {
     text-align: right;
+    color: blue;
     width: 200px;
     padding-right: 16px;
   }
