@@ -1,0 +1,169 @@
+html {
+  overflow-y: scroll; /* 스크롤바 항상 강제 표시 */
+}
+
+body {
+    font-family:  'Courier New', Courier, "IBM Plex Sans KR", sans-serif; monospace; 
+		font-size: clamp(14px, calc(100vw / 107), 24px);; 
+		word-spacing: 0px;
+		font-weight: normal;
+		word-break: keep-all;
+		background-color: white;
+		color: black;
+	}
+
+  .intro {
+  color: blue;
+  max-width: 300px;
+  width: 100%;
+  margin: 0; /* 왼쪽에 붙임 */
+  text-align: left;
+}
+
+@media (max-width: 480px) {
+  .intro {
+    color: blue;
+    max-width: 160px;   
+    padding: 0 0px;    
+  }
+}
+
+/* 1) 헤더(메뉴바) */
+.site-header {
+  position: sticky; 
+  top: 0; 
+  z-index: 1000;
+  background: transparent; 
+  border-bottom: line
+}
+
+.nav {
+  max-width: 800px; 
+  margin: 0 auto; 
+  padding: 12px 0px;
+  padding-right: 0;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  position: relative;
+}
+
+.nav a, .nav .is-button {
+  display: inline-block; 
+  text-decoration: none; color: #000;
+  transition: transform .2s ease, color .2s ease, opacity .2s ease;
+  background: none; border: 0; padding: 0; cursor: pointer; font: inherit;
+}
+
+.nav a:hover, .nav .is-button:hover { 
+  color: red;
+  transform:rotate(5deg) 
+}
+
+
+
+/* 드롭다운 컨테이너를 오른쪽 정렬 */
+.dropdown-lite {
+  position: absolute;
+  top: 100%;
+  right: 0;           /* ⬅ 오른쪽 기준 정렬 */
+  padding: 39px 0;     /* 메뉴 전체 바깥 여백 최소화 */
+  background: transparent;
+  z-index: 1200;
+}
+
+
+
+/* 리스트를 오른쪽으로 몰기 */
+.dropdown-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;  /* ⬅ 오른쪽 끝으로 정렬 */
+  gap: 6px;
+  width: 100%;
+}
+
+/* 항목 디자인: 국수다발 */
+.dropdown-list a {
+  display: block;
+  width: 340px;
+  background: #fff;
+  color: #000;
+  text-decoration: none;
+  text-align: right;
+  padding: 0px 0px;    /* ⬅ 패딩 최소화 → 드래그 느낌 */
+  border-radius: 0;    /* 각진 네모 느낌 유지 */
+  transition: transform .15s ease, box-shadow .15s ease;
+  white-space: nowrap; /* 긴 텍스트 줄바꿈 방지 */
+}
+
+.dropdown-list a:hover {
+  transform: rotate(2deg) translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .dropdown-lite {
+ position: absolute;
+    left: 0; right: 0;
+    /* top: calc(100% + 200px); /* ⬅ 버튼/헤더 아래로 72px 더 내려서 표시 */
+    transform: none;
+    width: 100%;
+  }
+  .dropdown-list a {
+    text-align: right;
+    width: 200px;
+    padding-right: 0px;
+  }
+}
+
+/* 2) 본문 컨테이너(800px 중앙 정렬) */
+.container { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
+.project { display: block; }
+.intro p { line-height: 1.5; margin: 1rem 0; }
+
+/* 3) 구분선 */
+.rule { border: none; height: 1px; background: #ddd; margin: 2rem 0; }
+
+/* 4) 갤러리 공통 */
+figure { margin: 0; padding: 0; }
+figure img { display: block; width: 100%; height: auto; margin: 2rem 0; }
+figcaption { 
+  margin-top: 0;
+  font-size: 12px; 
+  color: #666; 
+  line-height: 1.4; 
+  text-align: center; }
+
+.faces { text-align: left; }
+
+/* 5) 비디오 프레임 (컨테이너로 크기 제어) */
+.video-frame { margin: 2rem 0; }
+.video-frame.frame-sm { max-width: 700px; }
+.video-frame.frame-lg { max-width: 1200px; } /* 컨테이너는 800px이지만, 내부 비디오가 넘치지 않게 아래 설정 */
+.autoplay-video { width: 100%; height: auto; display: block; }
+
+/* 6) 반응형 */
+@media (max-width: 768px) {
+  .container { padding: 20px 0px; }
+  figure img { margin: 1.5rem 0; }
+  .video-frame.frame-lg { max-width: 100%; }
+}
+
+
+.two {
+  column-count: 2;          /* 두 개의 칼럼 */
+  column-gap: 60px;         /* 칼럼 간 간격 */
+  column-rule: 1px solid #ccc; /* 칼럼 사이 구분선 (원하면 삭제 가능) */
+  text-align: left;
+  
+  max-width: 900px;         /* 전체 너비 제한 */
+  margin: 0 auto;           /* 중앙 정렬 */
+  padding: 50px 0;          /* 좌우 패딩 제거, 위아래만 유지 */
+}
+
+
+
+::selection {  color: red;  background-color: yellow;}

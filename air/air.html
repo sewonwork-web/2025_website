@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>+.=:+*=*+#:+</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+<header class="site-header">
+  <nav class="nav">
+    <a class="brand" href="../index.html" rel="noopener">Sewon Min</a>
+    <a class="brand" a href="#" class="to-top" rel="noopener">Air Poetry / Fish Poetry</a>
+    <div class="nav-group">
+      <button id="indexToggle" class="nav-link is-button"
+              aria-haspopup="true" aria-expanded="false" aria-controls="indexDropdown">Index
+      </button>
+
+      <!-- 드롭다운: 텍스트 주변만 흰 박스 -->
+      <div id="indexDropdown" class="dropdown-lite" hidden>
+        <ul class="dropdown-list">
+          <li><a class="brand" a href="#" class="to-top" rel="noopener">Air Poetry/Fish Poetry</a></li>
+          <li><a href="../face/face.html">Faces of Scattered Love</a></li>
+          <li><a href="https://internet-river.neocities.org/" target="_blank" rel="noopener noreferrer">
+.**+**.***.......**.
+</a></li>
+          <li><a href="../local/local.html">Localitea</a></li>
+          <li><a href="../bread/bread.html">Bread Cosmologies</a></li>       
+        </ul>
+      </div>
+    </div>
+
+  </nav>
+</header>
+<!-- 본문 컨테이너: 800px 중앙 정렬 -->
+  <main class="container">
+    <!-- 프로젝트 섹션 -->
+    <section class="project">
+
+      <!-- 인트로(기존 article 내용) -->
+      <section class="intro">
+        <p>Faces of Scattered Love is a title for the year-long series of projects where migratory birds flying to Arctic, small leaves filling the tundra horizon, and paper beings descending staircases converge. </p>
+      </section>
+
+      <hr class="rule" />
+
+      <!-- 갤러리 아이템들 -->
+      <figure class="faces"><img src="../img/air_002.jpg" alt="Fish Poetry No.1" loading="lazy"></figure>
+      <figure class="faces"><img src="../img/air_004.jpg" alt="Fish Poetry No.1" loading="lazy"></figure>
+      <figure class="faces"><img src="../img/air_007.jpg" alt="Fish Poetry No.1" loading="lazy"></figure>
+      <figure class="faces"><img src="../img/air_006.jpg" alt="Fish Poetry No.1" loading="lazy"></figure>
+      <figure class="faces"><img src="../img/air_003.jpg" alt="Fish Poetry No.1" loading="lazy"></figure>
+      <figure class="faces"><img src="../img/air_005.jpg" alt="Fish Poetry No.1" loading="lazy"></figure>        
+    
+      
+ 
+    
+</article>
+
+    </section>
+  </main>
+</body>
+<script>
+  // 스크롤이 맨 아래에 도달하면 맨 위로 이동
+  window.onscroll = function () {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+      window.scrollTo(0, 0);
+    }
+  };
+
+// iOS/Safari 호환: muted + playsinline이면 사용자 제스처 없이도 재생 가능
+  const vids = document.querySelectorAll('.autoplay-video');
+
+  // 실제 소스 지연 세팅
+  const ensureSrc = v => {
+    if (!v.dataset.src) return;
+    if (!v.src || v.src === window.location.href) {
+      v.src = v.dataset.src;          // data-src → src
+      v.load();                       // 메타데이터 로드
+    }
+  };
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(async (entry) => {
+      const v = entry.target;
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+        ensureSrc(v);                 // 화면에 충분히 보일 때만 로드
+        try { await v.play(); } catch(e) {} // 자동재생 정책 회피(무음이므로 보통 OK)
+      } else {
+        v.pause();
+      }
+    });
+  }, { threshold: [0, 0.5, 1] });
+
+  vids.forEach(v => io.observe(v));
+
+  // 모달을 보여주는 함수
+  function showPopup(imageSrc) {
+    const popup = document.getElementById('popup');
+    const popupImage = document.getElementById('popupImage');
+    popupImage.src = imageSrc;
+    popup.style.display = 'block';
+  }
+
+  // 모달을 숨기는 함수
+  function hidePopup() {
+    const popup = document.getElementById('popup');
+    popup.style.display = 'none';
+  }
+
+  // 아이디와 이미지 매핑 객체
+  const popupMap = {
+    'map_0': 'map_1.png',
+    'map_00': 'map_2.jpeg',
+    'map_000': 'map_3.png',
+    'map_1': 'gift_1.png',
+    'map_2': 'gift_2.png',
+    'map_3': 'gift_3.png',
+    'map_4': 'gift_4.png',
+    'map_5': 'gift_5.png',
+    'map_6': 'gift_6.png',
+    'map_7': 'gift_7.png',
+    'map_8': 'gift_8.png',
+    'map_9': 'gift_9.png',
+    'map_10': 'gift_10.png',
+    'map_11': 'gift_11.png',
+    'map_12': 'gift_12.png',
+    'map_13': 'gift_13.png',
+    'map_14': 'gift_14.png',
+    'map_15': 'gift_15.png',
+    'map_16': 'gift_16.png',
+    'map_17': 'gift_17.png',
+    'map_18': 'gift_18.png',
+    'map_19': 'gift_19.png',
+    'map_20': 'gift_20.png',
+    'map_21': 'map_7.png',
+    'map_22': 'map_8.png',
+    'map_23': 'map_5.png',
+    'map_24': 'map_6.png',
+    'map_25': 'gift_21.png',
+    'map_26': 'map_9.png',
+    'map_95': 'new_1.png',
+    'map_96': 'new_2.png',
+    'map_97': 'new_3.png',
+    'map_98': 'new_4.png',
+    'map_99': 'new_5.png'
+  };
+
+  // 요소 존재 여부를 확인한 후 이벤트 바인딩
+  for (const [id, src] of Object.entries(popupMap)) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('click', function () {
+        showPopup(src);
+      });
+    }
+  }
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('indexToggle');
+  const dd     = document.getElementById('indexDropdown');
+
+  const open  = () => { dd.hidden = false; toggle.setAttribute('aria-expanded', 'true'); };
+  const close = () => { dd.hidden = true;  toggle.setAttribute('aria-expanded', 'false'); };
+  const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
+
+  toggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    isOpen() ? close() : open();
+  });
+
+  // 바깥 클릭 닫기
+  document.addEventListener('click', (e) => {
+    if (e.target === toggle || dd.contains(e.target)) return;
+    if (isOpen()) close();
+  });
+
+  // ESC 닫기
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen()) { close(); toggle.focus(); }
+  });
+});
+</script>
+
+
+</body>
