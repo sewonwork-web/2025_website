@@ -129,7 +129,7 @@ figcaption {
 
 /* 6) 반응형 */
 @media (max-width: 768px) {
-  .container { padding: 0px 0px; }
+  .container { padding: 20px 0px; }
   figure img { margin: 1.5rem 0; }
   .video-frame.frame-lg { max-width: 100%; }
 }
@@ -144,7 +144,7 @@ figcaption {
     width: 100%;                 /* ← 100vw 대신 100% */
     max-width: 100%;
     height: auto;
-    margin: 0;        /* 이미지 위아래 여백도 최소화 */
+    margin: 10;        /* 이미지 위아래 여백도 최소화 */
   }
 }
 

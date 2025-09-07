@@ -133,6 +133,12 @@ figcaption {
   figure img { margin: 1.5rem 0; }
   .video-frame.frame-lg { max-width: 100%; }
 }
+figcaption { 
+  margin-top: 0;
+  font-size: 9px; 
+  color: #666; 
+  line-height: 1.4; 
+  text-align: center; }
 
 
 .two {
