@@ -223,7 +223,7 @@ section:target {
 
   /* 본문 자체도 고정폭 모노스페이스 스케일 유지 */
   body {
-    font-size: calc(200vw / 107);   /* body 폰트도 비슷하게 키움 */
+    font-size: calc(220vw / 112);   /* body 폰트도 비슷하게 키움 */
     /* 핀치/더블탭 확대 방지 보강 */
     touch-action: manipulation; 
   }

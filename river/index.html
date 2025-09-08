@@ -1267,319 +1267,271 @@ _{?`,,/~|t?~,"-jttt/\///\t/);i/"l"/(:.-_-;1:[I;,/:{;:]+)/;I'^...`~":)tixz?,+~~:"
 
 
 <script>
-
-(() => {
-  const TOL = 2; // 바닥 판정 여유값(px)
-
-  const isMobile = () =>
-    window.matchMedia('(max-width:768px), (pointer:coarse)').matches;
-
-  const getTarget = () => (isMobile()
-    ? document.querySelector('.canvas')   // 모바일: .canvas 안에서 탐험
-    : window);                            // 데스크톱: 문서 전체
-
-  let target;
-
-  const onScroll = () => {
-    const el = (target === window) ? document.documentElement : target;
-    const scrollTop = (target === window)
-      ? (window.pageYOffset || el.scrollTop)
-      : el.scrollTop;
-    const clientH = (target === window) ? window.innerHeight : el.clientHeight;
-    const scrollH = (target === window) ? document.body.scrollHeight : el.scrollHeight;
-
-    if (scrollTop + clientH >= scrollH - TOL) {
-      if (target === window) window.scrollTo(0, 0);
-      else el.scrollTo(0, 0);
-    }
-  };
-
-  const bind = () => {
-    const newTarget = getTarget();
-    if (!newTarget) return;
-    if (target) target.removeEventListener('scroll', onScroll);
-    target = newTarget;
-    target.addEventListener('scroll', onScroll, { passive: true });
-  };
-
-  document.addEventListener('DOMContentLoaded', bind);
-  window.addEventListener('resize', bind);
-  window.addEventListener('orientationchange', bind);
-})();
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  // 1) 요소 참조 한 번만
-  const popup      = document.getElementById('popup');
-  const popupImage = document.getElementById('popupImage');
-
-  // 2) 전역에서 호출할 수 있게 window에 노출
-  window.showPopup = function (src) {
-    if (!popup || !popupImage) return;           // 방어
-    popupImage.src = src;
-    popup.style.display = 'block';
-
-    // 혹시 과거 코드가 스크롤 잠궜다면 풀어줌(모바일은 .canvas가 스크롤)
-    document.documentElement.style.overflow = '';
-    document.body.style.overflow = '';
-  };
-
-  window.hidePopup = function () {
-    if (!popup) return;
-    popup.style.display = 'none';
-    // 필요 시 여기서 overflow 원복 로직을 더 넣어도 됨
-  };
-
-  // 3) 모바일: 이미지 탭으로 닫기 (X 없이)
+(function () {
+  /* ========= 공통 ========= */
   const mq = window.matchMedia('(max-width:768px), (pointer:coarse)');
-  const bindMobileClose = () => {
-    popupImage.removeEventListener('pointerup', window.hidePopup);
-    if (mq.matches) {
-      popupImage.addEventListener('pointerup', window.hidePopup, { passive: true });
-    }
-  };
-  bindMobileClose();
-  mq.addEventListener ? mq.addEventListener('change', bindMobileClose)
-                      : mq.addListener(bindMobileClose);
-
-  // 4) id→이미지 매핑 클릭 바인딩 (요소가 존재하는 경우만)
-  const popupMap = {
-    'map_0': 'map_1.png',
-    'map_00': 'map_2.jpeg',
-    'map_000': 'map_3.png',
-    'map_1': 'gift_1.png',
-    'map_2': 'gift_2.png',
-    'map_3': 'gift_3.png',
-    'map_4': 'gift_4.png',
-    'map_5': 'gift_5.png',
-    'map_6': 'gift_6.png',
-    'map_7': 'gift_7.png',
-    'map_8': 'gift_8.png',
-    'map_9': 'gift_9.png',
-    'map_10': 'gift_10.png',
-    'map_11': 'gift_11.png',
-    'map_12': 'gift_12.png',
-    'map_13': 'gift_13.png',
-    'map_14': 'gift_14.png',
-    'map_15': 'gift_15.png',
-    'map_16': 'gift_16.png',
-    'map_17': 'gift_17.png',
-    'map_18': 'gift_18.png',
-    'map_19': 'gift_19.png',
-    'map_20': 'gift_20.png',
-    'map_21': 'map_7.png',
-    'map_22': 'map_8.png',
-    'map_23': 'map_5.png',
-    'map_24': 'map_6.png',
-    'map_25': 'gift_21.png',
-    'map_26': 'map_9.png',
-    'map_95': 'new_1.png',
-    'map_96': 'new_2.png',
-    'map_97': 'new_3.png',
-    'map_98': 'new_4.png',
-    'map_99': 'new_5.png'
-  };
-  for (const [id, src] of Object.entries(popupMap)) {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('click', () => window.showPopup(src));
-  }
-});
-
-  // 요소 존재 여부를 확인한 후 이벤트 바인딩
-  for (const [id, src] of Object.entries(popupMap)) {
-    const el = document.getElementById(id);
-    if (el) {
-      el.addEventListener('click', function () {
-        showPopup(src);
-      });
-    }
-  }
-
-const popup = document.getElementById('popup');
-const popupImage = document.getElementById('popupImage');
-
-
-
-popupImage.addEventListener('click', hidePopup); // 이미지 탭으로 닫기(선택)
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  const mq = window.matchMedia('(max-width:768px), (pointer:coarse)');
-  const popup = document.getElementById('popup');
-  const popupImage = document.getElementById('popupImage');
-
   const isMobile = () => mq.matches;
-  const isVisible = () => popup && popup.style.display === 'block';
 
-  let downPt = null;
-  const MOVE_TOL = 8; // 드래그/스크롤 구분 허용치(px)
-
-  function getPoint(e) {
-    if ('changedTouches' in e && e.changedTouches[0]) return e.changedTouches[0];
-    if ('touches' in e && e.touches[0]) return e.touches[0];
-    return e;
-  }
-
-  function onDown(e) {
-    if (!isMobile() || !isVisible()) return;
-    const p = getPoint(e);
-    downPt = { x: p.clientX, y: p.clientY };
-  }
-
-  function onUp(e) {
-    if (!isMobile() || !isVisible() || !downPt) return;
-
-    const p = getPoint(e);
-    const dx = p.clientX - downPt.x;
-    const dy = p.clientY - downPt.y;
-    downPt = null;
-
-    // 스크롤 제스처면 무시
-    if (Math.hypot(dx, dy) > MOVE_TOL) return;
-
-    const r = popupImage.getBoundingClientRect();
-    const outside =
-      p.clientX < r.left || p.clientX > r.right ||
-      p.clientY < r.top  || p.clientY > r.bottom;
-
-    if (outside) {
-      e.preventDefault();     // 밑의 링크 클릭 방지
-      e.stopPropagation();    // 이벤트 전파 중단
-      hidePopup();            // 이미지 밖 탭 → 닫기
+  /* ========= 좌/우 끝 번쩍: CSS/엘리먼트 보장 ========= */
+  (function ensureEdgeFlash(){
+    if (!document.getElementById('edgeFlashCSS')) {
+      const style = document.createElement('style');
+      style.id = 'edgeFlashCSS';
+      style.textContent = `
+        #edgeFlash{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:9998;}
+        .edge-flash{animation:edge-flash .18s ease-out both;}
+        @keyframes edge-flash{0%{opacity:0}40%{opacity:.55}100%{opacity:0}}
+      `;
+      document.head.appendChild(style);
     }
-  }
-
-  // 캡처 단계에서 먼저 받기 (모바일 사파리 대응: touch + pointer 둘 다 등록)
-  window.addEventListener('touchstart', onDown, { capture: true, passive: true });
-  window.addEventListener('touchend',   onUp,   { capture: true, passive: false });
-  window.addEventListener('pointerdown',onDown, { capture: true, passive: true });
-  window.addEventListener('pointerup',  onUp,   { capture: true, passive: false });
-});
-
-
-
-
-
-(() => {
-  const TOL = 2;               // 여유값(px)
-  const MOVE_TOL = 8;          // 손가락 드래그 허용치
-  const isMobile = () => window.matchMedia('(max-width:768px), (pointer:coarse)').matches;
-
-  // 스크롤 대상 선택: 모바일=.canvas, 아니면 문서
-  const pickEls = () => {
-    const canvas = document.querySelector('.canvas');
-    if (isMobile() && canvas) return { target: canvas, meter: canvas };
-    const meter = document.scrollingElement || document.documentElement;
-    return { target: window, meter };
-  };
-
-  // 번쩍 오버레이 준비
-  let flashEl = document.getElementById('edgeFlash');
-  if (!flashEl) { flashEl = document.createElement('div'); flashEl.id='edgeFlash'; document.body.appendChild(flashEl); }
-  let lastFlash = 0;
-  function flash(){
-    const now = Date.now(); if (now - lastFlash < 300) return; lastFlash = now;
-    flashEl.classList.remove('edge-flash'); void flashEl.offsetWidth; flashEl.classList.add('edge-flash');
-  }
-
-  // 엣지 판정
-  const atTop    = el => el.scrollTop <= TOL;
-  const atBottom = el => el.scrollTop + el.clientHeight >= el.scrollHeight - TOL;
-  const atLeft   = el => el.scrollLeft <= TOL;
-  const atRight  = el => el.scrollLeft + el.clientWidth >= el.scrollWidth - TOL;
-
-  let target=null, meter=null, jumping=false;
-
-  // 세로 점프
-  function jumpTop(){ if (jumping) return; jumping=true; (target===window? window : meter).scrollTo({top:0, behavior:'auto'}); jumping=false; }
-  function jumpBottom(){ if (jumping) return; jumping=true; const y = meter.scrollHeight - meter.clientHeight; (target===window? window : meter).scrollTo({top:y, behavior:'auto'}); jumping=false; }
-
-  // 방향 의도(휠/터치) 추적
-  let touchStart=null, intendY=0, intendX=0;
-
-  function onWheel(e){
-    intendY = Math.sign(e.deltaY);
-    intendX = Math.sign(e.deltaX);
-    // 엣지에서 추가 스크롤 의도 → 즉시 처리
-    if (meter.scrollHeight > meter.clientHeight){
-      if (intendY > 0 && atBottom(meter)) jumpTop();
-      else if (intendY < 0 && atTop(meter)) jumpBottom();
+    if (!document.getElementById('edgeFlash')) {
+      const flashEl = document.createElement('div');
+      flashEl.id = 'edgeFlash';
+      document.body.appendChild(flashEl);
     }
-    if (meter.scrollWidth > meter.clientWidth){
-      if ((intendX < 0 && atLeft(meter)) || (intendX > 0 && atRight(meter))) flash();
+  })();
+
+  /* ========= 팝업: 열기/닫기 + 모바일 닫기 ========= */
+  document.addEventListener('DOMContentLoaded', () => {
+    const popup      = document.getElementById('popup');
+    const popupImage = document.getElementById('popupImage');
+
+    // 외부에서 호출할 수 있도록 노출
+    window.showPopup = (src) => {
+      if (!popup || !popupImage) return;
+      popupImage.src = src;
+      popup.style.display = 'block';
+      // 과거에 잠궜던 스크롤 풀기(있으면)
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    };
+    window.hidePopup = () => {
+      if (!popup) return;
+      popup.style.display = 'none';
+    };
+
+    // id → 이미지 매핑 (존재하는 요소만 바인딩)
+    const popupMap = {
+      'map_0':'map_1.png','map_00':'map_2.jpeg','map_000':'map_3.png',
+      'map_1':'gift_1.png','map_2':'gift_2.png','map_3':'gift_3.png',
+      'map_4':'gift_4.png','map_5':'gift_5.png','map_6':'gift_6.png',
+      'map_7':'gift_7.png','map_8':'gift_8.png','map_9':'gift_9.png',
+      'map_10':'gift_10.png','map_11':'gift_11.png','map_12':'gift_12.png',
+      'map_13':'gift_13.png','map_14':'gift_14.png','map_15':'gift_15.png',
+      'map_16':'gift_16.png','map_17':'gift_17.png','map_18':'gift_18.png',
+      'map_19':'gift_19.png','map_20':'gift_20.png','map_21':'map_7.png',
+      'map_22':'map_8.png','map_23':'map_5.png','map_24':'map_6.png',
+      'map_25':'gift_21.png','map_26':'map_9.png','map_95':'new_1.png',
+      'map_96':'new_2.png','map_97':'new_3.png','map_98':'new_4.png','map_99':'new_5.png'
+    };
+    Object.entries(popupMap).forEach(([id, src]) => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('click', () => window.showPopup(src));
+    });
+
+    // 모바일: 이미지 탭으로 닫기
+    const bindMobileImageClose = () => {
+      popupImage.removeEventListener('pointerup', window.hidePopup);
+      if (isMobile()) popupImage.addEventListener('pointerup', window.hidePopup, { passive: true });
+    };
+    bindMobileImageClose();
+    (mq.addEventListener ? mq.addEventListener('change', bindMobileImageClose)
+                         : mq.addListener(bindMobileImageClose));
+
+    // 모바일: 이미지 "밖" 탭으로 닫기 (배경이 pointer-events:none이어도 동작)
+    let downPt = null;
+    const MOVE_TOL = 8;
+    const getPoint = (e) => (e.changedTouches?.[0]) || (e.touches?.[0]) || e;
+
+    function onDown(e){
+      if (!isMobile() || popup.style.display !== 'block') return;
+      const p = getPoint(e); downPt = { x:p.clientX, y:p.clientY };
     }
-  }
+    function onUp(e){
+      if (!isMobile() || popup.style.display !== 'block' || !downPt) return;
+      const p = getPoint(e);
+      const moved = Math.hypot(p.clientX - downPt.x, p.clientY - downPt.y);
+      downPt = null;
+      if (moved > MOVE_TOL) return; // 드래그/스크롤은 무시
 
-  function onTouchStart(e){
-    const t = e.touches && e.touches[0] ? e.touches[0] : e;
-    touchStart = { x:t.clientX, y:t.clientY };
-    intendY = 0; intendX = 0;
-  }
-  function onTouchMove(e){
-    if (!touchStart) return;
-    const t = e.touches && e.touches[0] ? e.touches[0] : e;
-    const dx = t.clientX - touchStart.x;
-    const dy = t.clientY - touchStart.y;
-    if (Math.abs(dy) > MOVE_TOL) intendY = dy > 0 ? -1 : 1; // 손가락 ↓ => 위로 스크롤 의도(-1), 손가락 ↑ => 아래로(+1)
-    if (Math.abs(dx) > MOVE_TOL) intendX = dx > 0 ? -1 : 1; // 손가락 → => 왼쪽 스크롤 의도(-1), 손가락 ← => 오른쪽(+1)
-
-    // 좌우 끝 번쩍
-    if (meter.scrollWidth > meter.clientWidth){
-      if ((intendX < 0 && atLeft(meter)) || (intendX > 0 && atRight(meter))) flash();
+      const r = popupImage.getBoundingClientRect();
+      const outside = p.clientX < r.left || p.clientX > r.right || p.clientY < r.top || p.clientY > r.bottom;
+      if (outside) { e.preventDefault(); window.hidePopup(); }
     }
-  }
-  function onTouchEnd(){
-    if (meter.scrollHeight > meter.clientHeight){
-      if (intendY > 0 && atBottom(meter)) jumpTop();
-      else if (intendY < 0 && atTop(meter)) jumpBottom();
+    window.addEventListener('touchstart', onDown, { capture:true, passive:true  });
+    window.addEventListener('touchend',   onUp,   { capture:true, passive:false });
+    window.addEventListener('pointerdown',onDown, { capture:true, passive:true  });
+    window.addEventListener('pointerup',  onUp,   { capture:true, passive:false });
+  });
+
+  /* ========= 스크롤: 위↔아래 루프 + 좌우 끝 번쩍 ========= */
+  (function loopAndFlash(){
+    const TOL = 2; // 엣지 여유값(px)
+
+    const pickTarget = () => {
+      const canvas = document.querySelector('.canvas');
+      if (isMobile() && canvas) return canvas;   // 모바일: .canvas 스크롤
+      return window;                              // 데탑: 문서 스크롤
+    };
+
+    const flashEl = document.getElementById('edgeFlash');
+    let lastFlash = 0;
+    const flash = () => {
+      const now = Date.now(); if (now - lastFlash < 300) return;
+      lastFlash = now;
+      flashEl.classList.remove('edge-flash'); void flashEl.offsetWidth; flashEl.classList.add('edge-flash');
+    };
+
+    let target = null, meter = null, prevY = 0, prevX = 0;
+
+    function attach(){
+      detach();
+      target = pickTarget();
+      meter = (target === window)
+        ? (document.scrollingElement || document.documentElement)
+        : target;
+
+      prevY = (target === window) ? (window.pageYOffset || meter.scrollTop) : meter.scrollTop;
+      prevX = meter.scrollLeft;
+
+      target.addEventListener('scroll', onScroll, { passive: true });
+      if (target === window) {
+        window.addEventListener('wheel', onWheel, { passive: true });
+      } else {
+        target.addEventListener('touchmove', onTouchMove, { passive: true });
+      }
     }
-    touchStart=null; intendY=0; intendX=0;
-  }
-
-  function onScroll(){
-    // 스크롤 자체만으로는 top→bottom 의도를 알기 어려워서
-    // 실제 점프는 wheel/touch 핸들러에서 처리
-  }
-
-  // 바인딩/리바인딩
-  function unbind(){
-    if (!target) return;
-    if (target===window){
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('wheel', onWheel, {passive:true});
-    } else {
+    function detach(){
+      if (!target) return;
       target.removeEventListener('scroll', onScroll);
-      target.removeEventListener('touchstart', onTouchStart);
-      target.removeEventListener('touchmove', onTouchMove);
-      target.removeEventListener('touchend', onTouchEnd);
+      if (target === window) window.removeEventListener('wheel', onWheel);
+      else target.removeEventListener('touchmove', onTouchMove);
+      target = meter = null;
     }
-    target=null; meter=null;
-  }
-  function bind(){
-    unbind();
-    ({target, meter} = pickEls());
-    if (!meter) return;
 
-    if (target===window){
-      window.addEventListener('scroll', onScroll, {passive:true});
-      window.addEventListener('wheel', onWheel, {passive:true});
-    } else {
-      target.addEventListener('scroll', onScroll, {passive:true});
-      target.addEventListener('touchstart', onTouchStart, {passive:true});
-      target.addEventListener('touchmove', onTouchMove, {passive:true});
-      target.addEventListener('touchend', onTouchEnd, {passive:true});
+    function atTop(el){ return el.scrollTop <= TOL; }
+    function atBottom(el){ return el.scrollTop + el.clientHeight >= el.scrollHeight - TOL; }
+    function atLeft(el){ return el.scrollLeft <= TOL; }
+    function atRight(el){ return el.scrollLeft + el.clientWidth >= el.scrollWidth - TOL; }
+
+    function jumpTop(){ (target===window? window : meter).scrollTo({ top: 0, behavior: 'auto' }); }
+    function jumpBottom(){
+      const y = meter.scrollHeight - meter.clientHeight;
+      (target===window? window : meter).scrollTo({ top: y, behavior: 'auto' });
     }
-  }
 
-  if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', bind);
-  else bind();
-  window.addEventListener('resize', bind);
-  window.addEventListener('orientationchange', bind);
+    function onScroll(){
+      const y = (target === window) ? (window.pageYOffset || meter.scrollTop) : meter.scrollTop;
+      const x = meter.scrollLeft;
+      const dy = y - prevY;
+      const dx = x - prevX;
+      prevY = y; prevX = x;
+
+      // 세로 루프 (방향 기반)
+      if (meter.scrollHeight > meter.clientHeight) {
+        if (dy > 0 && atBottom(meter)) jumpTop();      // 아래로 더 → 맨 위
+        else if (dy < 0 && atTop(meter)) jumpBottom(); // 위로 더 → 맨 아래
+      }
+
+      // 좌/우 끝 번쩍
+      if (meter.scrollWidth > meter.clientWidth && dx !== 0) {
+        if (atLeft(meter) || atRight(meter)) flash();
+      }
+    }
+
+    function onWheel(e){
+      // 휠로 좌/우 번쩍 보강
+      if (meter.scrollWidth > meter.clientWidth) {
+        const dx = Math.sign(e.deltaX);
+        if ((dx < 0 && atLeft(meter)) || (dx > 0 && atRight(meter))) flash();
+      }
+    }
+    function onTouchMove(e){
+      // 터치로 좌/우 번쩍 보강
+      const t = e.touches && e.touches[0];
+      if (!t) return;
+      if (meter.scrollWidth > meter.clientWidth) {
+        // 실제 번쩍은 onScroll에서도 처리되므로 중복 최소화
+        if (atLeft(meter) || atRight(meter)) flash();
+      }
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attach);
+    else attach();
+    window.addEventListener('resize', attach);
+    window.addEventListener('orientationchange', attach);
+    (mq.addEventListener ? mq.addEventListener('change', attach) : mq.addListener(attach));
+  })();
+
+  /* ========= 끝 ========= */
 })();
 
 
+/* === TOP/BOTTOM WRAP – edge overscroll 전용 미니 패치 === */
+(function(){
+  const mq = window.matchMedia('(max-width:768px), (pointer:coarse)');
+  const isMobile = () => mq.matches;
+  const TOL = 2;
 
+  function pick(){
+    const c = document.querySelector('.canvas');
+    if (isMobile() && c) return { t:c, m:c }; // 모바일: .canvas
+    const m = document.scrollingElement || document.documentElement;
+    return { t:window, m };                   // 데탑: 문서
+  }
+  const atTop    = m => m.scrollTop <= TOL;
+  const atBottom = m => m.scrollTop + m.clientHeight >= m.scrollHeight - TOL;
 
+  function jumpTop(t,m){ (t===window? window : m).scrollTo({ top:0, behavior:'auto' }); }
+  function jumpBottom(t,m){
+    const y = m.scrollHeight - m.clientHeight;
+    (t===window? window : m).scrollTo({ top:y, behavior:'auto' });
+  }
+
+  // 데스크톱 휠: 가장자리에서 추가 스크롤 시 즉시 점프
+  function onWheel(e){
+    const {t,m} = pick();
+    if (m.scrollHeight <= m.clientHeight + 1) return; // 한 화면이면 무시
+    if (e.deltaY > 0 && atBottom(m))      jumpTop(t,m);     // 아래로 더 → 맨 위
+    else if (e.deltaY < 0 && atTop(m))    jumpBottom(t,m);  // 위로 더 → 맨 아래
+  }
+
+  // 터치: 방향 의도만 판단해 끝에서 점프
+  let startY = null;
+  function onTouchStart(e){
+    const p = e.touches?.[0]; if (!p) return;
+    startY = p.clientY;
+  }
+  function onTouchEnd(e){
+    if (startY == null) return;
+    const p = e.changedTouches?.[0]; if (!p) return;
+    const dy = p.clientY - startY;   // 손가락 ↓(양수)=내용 위로 스크롤, 손가락 ↑(음수)=내용 아래로
+    startY = null;
+
+    const {t,m} = pick();
+    if (m.scrollHeight <= m.clientHeight + 1) return;
+
+    if (dy < -8 && atBottom(m))      jumpTop(t,m);     // 위로 스와이프(내용 아래로) + 바닥
+    else if (dy >  8 && atTop(m))    jumpBottom(t,m);  // 아래로 스와이프(내용 위로) + 천장
+  }
+
+  function bind(){
+    // 데탑: window에 wheel
+    window.addEventListener('wheel', onWheel, { passive:true });
+
+    // 모바일: .canvas가 있으면 그곳에 터치 바인딩, 없으면 window
+    const c = document.querySelector('.canvas');
+    const touchTarget = (isMobile() && c) ? c : window;
+    touchTarget.addEventListener('touchstart', onTouchStart, { passive:true });
+    touchTarget.addEventListener('touchend',   onTouchEnd,   { passive:true });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+  else bind();
+  mq.addEventListener ? mq.addEventListener('change', bind) : mq.addListener(bind);
+  window.addEventListener('resize', bind);
+  window.addEventListener('orientationchange', bind);
+})();
 
 </script>
 
