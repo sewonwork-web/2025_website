@@ -1,5 +1,5 @@
 body {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Batang', '바탕', serif, 'Courier New', Courier, monospace;
 		font-size: calc(100vw / 107); 
 		word-spacing: 0px;
 		font-weight: normal;
@@ -50,6 +50,8 @@ header {
   max-width: 600px;
   height: auto;
 }
+
+.popup .popup-close { display: none !important; }
 
 pre {
   font-family: 'Courier New', Courier, monospace;
@@ -167,7 +169,7 @@ section:target {
     background-image: none !important;        /* 일부 reset 테마의 밑줄 대체 */
     border-bottom: none !important;           /* 밑줄을 border로 구현한 경우 */
   }
-  
+
   .canvas {
     height: 100svh;
     overflow: auto;                 /* 이 안에서만 탐험 */
@@ -177,12 +179,29 @@ section:target {
   }
 
   pre {
-    font-size: calc(250vw / 112);   /* = 2x 확대 느낌 */
+    font-size: calc(230vw / 112);   /* = 2x 확대 느낌 */
     line-height: 1.18;              /* 아스키 깨짐 방지 미세 조정 */
     width: max-content;
     margin: 0;                      /* 좌상단부터 탐험 시작 */
     white-space: pre;
   }
+
+  .popup img {
+    width: 60vw !important;       /* 너비 크게 */
+    max-width: none !important;    /* 인라인의 max-width:30% 무효화 */
+    height: auto !important;
+    top: 50% !important;           /* 필요하면 중앙 정렬도 통일 */
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  #popup {
+    pointer-events: none !important;     /* 배경 오버레이는 이벤트 통과 */
+  }
+
+  .popup .popup-close { display: none !important; }  /* X 숨김 (있다면) */
+  #popup { pointer-events: none !important; }        /* 배경 터치 통과 */
+  #popup img { pointer-events: auto !important; cursor: pointer; }
 
   /* 본문 자체도 고정폭 모노스페이스 스케일 유지 */
   body {

@@ -36,7 +36,7 @@
 	저의 인터넷 강에 오신 것을 환영합니다. 오후의 빛이 너무 밝아서 수면 위의 색깔들을 다 날려버렸어요. 빛이 물결과 자갈들을 하얗고 까만 반짝이들로 섞어버렸어요. 이 강은 텍스트를 서로 다른 장소로 연결하는 언어를 통과하여 흐릅니다. 이 강은 서울 곳곳에서 도심보다 몇 걸음 아래 비밀처럼 흐릅니다. 이 강은 종로, 을지로, 동대문을 지나갑니다. 이 강은 신림, 신도림, 목동을 지나갑니다. 이 강은 홍제, 연희, 망원을 지나갑니다. 이 강은 100년 전이나 100년 후에 흐르고 있어요. 이 강은 저의 기억 속 도시에서 흐릅니다. 이 강은 저의 뷰 파인더 안과 사진첩 속에서 흐릅니다. 이 강은 당신의 손가락 아래 모니터 위에서 흐르고 있네요. 이 강은 당신의 눈 속으로 들어가 밝음과 어둠을 구별하는  가장자리를 통과하여 흐릅니다. 이 강은 당신이 머무는 장소에서 공중으로 흐르고 있어요. 이 강은 벽과 바닥과 천장 속에서 흐릅니다. 이 강은 무거운 물처럼 바다 밑바닥에 가라앉아 흐릅니다. 이 강은 멀리 있는 데이터 센터로 잠시 모였다가 다시 가까운 곳으로 옵니다. 이 강에는 물고기와 철새들이 살고 있어요. 새들은 남쪽 바다를 건너 날아와 여기 잠시 머물다가 북쪽의 내륙으로 날아갑니다. 갈대들 사이에서 새들을 찾아보세요. 자갈을 들춰 물고기를 찾아보세요. 이 강은 앞면도 뒷면도 없는 납작한 매듭처럼 흐릅니다. 이 강은 미로처럼 갈라지는 갈래를 따라 흐릅니다. 이 강에는 상류도 하류도 없어요. 스크롤을 내리고 연결되는 동안 탈출구는 없어요. 그냥 원하는 만큼 머물러 주세요. 2024년 4월의 <a href="">세원</a>이 사랑을 보냅니다. 
 	</marquee>
 	</header>
-	<article>
+
 <pre id="bird_1">
 %%%#-=+=-#%%%*::.-::=-=--::-:.-==:-*##%%*=--#%%%%@%%%%@@@%%%%*--.::-+%%%%@@%%@@%%%%%%*:-::...:-=-****#=--=-=-.::::-+-=-:-----=+=-:----=++#%#####**++*******++*+**#%%%%###%####***=+-
 *####*=-=#%%##*====-====++*##%%%%%#%%%%%#*=#%%%%%@@%%%%%%%#%+*=  .+%%%@@@@@@%%%%%%%##%*-::::.:==-****#*:--::=-=--:-=----++=::---:---=-.-=--=+++**#****+*+*##%%%%%%%%%%###%%%##***++=
@@ -1253,36 +1253,96 @@ _{?`,,/~|t?~,"-jttt/\///\t/);i/"l"/(:.-_-;1:[I;,/:{;:]+)/;I'^...`~":)tixz?,+~~:"
 #*#**###**+*#*****+*#+=+*#**++**++*+++***++-++**#*++***+++***+==+==+=+*+++=+*++++*+++++++++:+*+++*+**==:--==+**++++***++**+=-=***++*++-+*#*+***++*+***+++*#==*###**#***#***+##*##***
 ####*#*#+***##*###****++++***+**+**++***++*+*+**#*+**#+=*+***+++*===+*+++*-=++=+=++*++*+=+==++++*+*++*+==-=+**++**+*+*=**+*++**+*+*+*#+###++*#**==#*#+-+***--**##*#****##*#*#####*##
 ########**######*#**##*#*****+*#*##*#***+*******#**+*#*+*+******+*+++#+*=**++***++=#*+=+*++++***+***##*+****+*=***#***=+#**+=<a href=#bird_9 class="blink">*</a>+*+***+#*##**+*#*=++*##==*#*<a href=#bird_10 class="blink">#</a>#+#*#######*#####*%#*###*</pre>
-</article>
+
 </div>
 <!-- 모달 -->
 <div id="popup" class="popup" onclick="hidePopup()">
+
+  <button class="popup-close" aria-label="Close" onclick="hidePopup()">✕</button>
+
   <img id="popupImage" src="image-5.jpeg" alt="모달 이미지">
 </div>
 
+
+
+
 <script>
-  // 스크롤이 맨 아래에 도달하면 맨 위로 이동
-  window.onscroll = function () {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-      window.scrollTo(0, 0);
+
+(() => {
+  const TOL = 2; // 바닥 판정 여유값(px)
+
+  const isMobile = () =>
+    window.matchMedia('(max-width:768px), (pointer:coarse)').matches;
+
+  const getTarget = () => (isMobile()
+    ? document.querySelector('.canvas')   // 모바일: .canvas 안에서 탐험
+    : window);                            // 데스크톱: 문서 전체
+
+  let target;
+
+  const onScroll = () => {
+    const el = (target === window) ? document.documentElement : target;
+    const scrollTop = (target === window)
+      ? (window.pageYOffset || el.scrollTop)
+      : el.scrollTop;
+    const clientH = (target === window) ? window.innerHeight : el.clientHeight;
+    const scrollH = (target === window) ? document.body.scrollHeight : el.scrollHeight;
+
+    if (scrollTop + clientH >= scrollH - TOL) {
+      if (target === window) window.scrollTo(0, 0);
+      else el.scrollTo(0, 0);
     }
   };
 
-  // 모달을 보여주는 함수
-  function showPopup(imageSrc) {
-    const popup = document.getElementById('popup');
-    const popupImage = document.getElementById('popupImage');
-    popupImage.src = imageSrc;
+  const bind = () => {
+    const newTarget = getTarget();
+    if (!newTarget) return;
+    if (target) target.removeEventListener('scroll', onScroll);
+    target = newTarget;
+    target.addEventListener('scroll', onScroll, { passive: true });
+  };
+
+  document.addEventListener('DOMContentLoaded', bind);
+  window.addEventListener('resize', bind);
+  window.addEventListener('orientationchange', bind);
+})();
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 1) 요소 참조 한 번만
+  const popup      = document.getElementById('popup');
+  const popupImage = document.getElementById('popupImage');
+
+  // 2) 전역에서 호출할 수 있게 window에 노출
+  window.showPopup = function (src) {
+    if (!popup || !popupImage) return;           // 방어
+    popupImage.src = src;
     popup.style.display = 'block';
-  }
 
-  // 모달을 숨기는 함수
-  function hidePopup() {
-    const popup = document.getElementById('popup');
+    // 혹시 과거 코드가 스크롤 잠궜다면 풀어줌(모바일은 .canvas가 스크롤)
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+  };
+
+  window.hidePopup = function () {
+    if (!popup) return;
     popup.style.display = 'none';
-  }
+    // 필요 시 여기서 overflow 원복 로직을 더 넣어도 됨
+  };
 
-  // 아이디와 이미지 매핑 객체
+  // 3) 모바일: 이미지 탭으로 닫기 (X 없이)
+  const mq = window.matchMedia('(max-width:768px), (pointer:coarse)');
+  const bindMobileClose = () => {
+    popupImage.removeEventListener('pointerup', window.hidePopup);
+    if (mq.matches) {
+      popupImage.addEventListener('pointerup', window.hidePopup, { passive: true });
+    }
+  };
+  bindMobileClose();
+  mq.addEventListener ? mq.addEventListener('change', bindMobileClose)
+                      : mq.addListener(bindMobileClose);
+
+  // 4) id→이미지 매핑 클릭 바인딩 (요소가 존재하는 경우만)
   const popupMap = {
     'map_0': 'map_1.png',
     'map_00': 'map_2.jpeg',
@@ -1319,6 +1379,11 @@ _{?`,,/~|t?~,"-jttt/\///\t/);i/"l"/(:.-_-;1:[I;,/:{;:]+)/;I'^...`~":)tixz?,+~~:"
     'map_98': 'new_4.png',
     'map_99': 'new_5.png'
   };
+  for (const [id, src] of Object.entries(popupMap)) {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('click', () => window.showPopup(src));
+  }
+});
 
   // 요소 존재 여부를 확인한 후 이벤트 바인딩
   for (const [id, src] of Object.entries(popupMap)) {
@@ -1329,6 +1394,69 @@ _{?`,,/~|t?~,"-jttt/\///\t/);i/"l"/(:.-_-;1:[I;,/:{;:]+)/;I'^...`~":)tixz?,+~~:"
       });
     }
   }
+
+const popup = document.getElementById('popup');
+const popupImage = document.getElementById('popupImage');
+
+
+
+popupImage.addEventListener('click', hidePopup); // 이미지 탭으로 닫기(선택)
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const mq = window.matchMedia('(max-width:768px), (pointer:coarse)');
+  const popup = document.getElementById('popup');
+  const popupImage = document.getElementById('popupImage');
+
+  const isMobile = () => mq.matches;
+  const isVisible = () => popup && popup.style.display === 'block';
+
+  let downPt = null;
+  const MOVE_TOL = 8; // 드래그/스크롤 구분 허용치(px)
+
+  function getPoint(e) {
+    if ('changedTouches' in e && e.changedTouches[0]) return e.changedTouches[0];
+    if ('touches' in e && e.touches[0]) return e.touches[0];
+    return e;
+  }
+
+  function onDown(e) {
+    if (!isMobile() || !isVisible()) return;
+    const p = getPoint(e);
+    downPt = { x: p.clientX, y: p.clientY };
+  }
+
+  function onUp(e) {
+    if (!isMobile() || !isVisible() || !downPt) return;
+
+    const p = getPoint(e);
+    const dx = p.clientX - downPt.x;
+    const dy = p.clientY - downPt.y;
+    downPt = null;
+
+    // 스크롤 제스처면 무시
+    if (Math.hypot(dx, dy) > MOVE_TOL) return;
+
+    const r = popupImage.getBoundingClientRect();
+    const outside =
+      p.clientX < r.left || p.clientX > r.right ||
+      p.clientY < r.top  || p.clientY > r.bottom;
+
+    if (outside) {
+      e.preventDefault();     // 밑의 링크 클릭 방지
+      e.stopPropagation();    // 이벤트 전파 중단
+      hidePopup();            // 이미지 밖 탭 → 닫기
+    }
+  }
+
+  // 캡처 단계에서 먼저 받기 (모바일 사파리 대응: touch + pointer 둘 다 등록)
+  window.addEventListener('touchstart', onDown, { capture: true, passive: true });
+  window.addEventListener('touchend',   onUp,   { capture: true, passive: false });
+  window.addEventListener('pointerdown',onDown, { capture: true, passive: true });
+  window.addEventListener('pointerup',  onUp,   { capture: true, passive: false });
+});
+
+
 </script>
 
 
