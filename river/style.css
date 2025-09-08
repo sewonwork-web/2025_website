@@ -20,7 +20,6 @@ body {
   overflow: visible; /* 데스크톱 기본은 기존 동작 유지 */
 }
 
-
 header {
 	position: fixed;
 	top: 0;
@@ -29,6 +28,25 @@ header {
 	margin: 0 auto;
 	width: 100%
 }
+
+#edgeFlash{
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9998; /* 모달(9999)보다 아래 */
+}
+.edge-flash{
+  animation: edge-flash .18s ease-out both;
+}
+@keyframes edge-flash{
+  0%{opacity:0}
+  40%{opacity:.55}
+  100%{opacity:0}
+}
+
+
 
 .popup {
   display: none;
@@ -179,7 +197,7 @@ section:target {
   }
 
   pre {
-    font-size: calc(230vw / 112);   /* = 2x 확대 느낌 */
+    font-size: calc(220vw / 112);   /* = 2x 확대 느낌 */
     line-height: 1.18;              /* 아스키 깨짐 방지 미세 조정 */
     width: max-content;
     margin: 0;                      /* 좌상단부터 탐험 시작 */
