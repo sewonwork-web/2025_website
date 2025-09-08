@@ -12,13 +12,7 @@ body {
 		color: black;
 	}
 
-  .intro {
-  color: blue;
-  max-width: 300px;
-  width: 100%;
-  margin: 0; /* 왼쪽에 붙임 */
-  text-align: left;
-}
+
 
 @media (max-width: 480px) {
   .intro {
@@ -122,7 +116,20 @@ body {
 /* 2) 본문 컨테이너(800px 중앙 정렬) */
 .container { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
 .project { display: block; }
-.intro p { line-height: 1.5; margin: 1rem 0; }
+
+  .intro {
+  position: fixed;
+  color: blue;
+  max-width: 300px;
+  width: 100%;
+  margin: 0; /* 왼쪽에 붙임 */
+  text-align: left;
+}
+
+
+.intro p {
+  line-height: 1.5; 
+  margin: 1rem 0; }
 
 /* 3) 구분선 */
 .rule { border: none; height: 1px; background: #ddd; margin: 2rem 0; }
