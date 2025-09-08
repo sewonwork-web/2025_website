@@ -8,8 +8,11 @@ body {
 		color: black;
 	}
 
-  html, body { overflow-x: hidden;
-               }
+  html, body {
+  margin: 0;          /* ← 이게 없어서 한쪽이 더 넓어 보였을 가능성 큼 */
+  padding: 0;
+  overflow-x: hidden; /* 기존 유지 */
+}
 
 .canvas {
   width: 100vw;
