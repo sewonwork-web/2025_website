@@ -1364,174 +1364,140 @@ _{?`,,/~|t?~,"-jttt/\///\t/);i/"l"/(:.-_-;1:[I;,/:{;:]+)/;I'^...`~":)tixz?,+~~:"
     window.addEventListener('pointerup',  onUp,   { capture:true, passive:false });
   });
 
-  /* ========= 스크롤: 위↔아래 루프 + 좌우 끝 번쩍 ========= */
-  (function loopAndFlash(){
-    const TOL = 2; // 엣지 여유값(px)
+(function loopAndFlash(){
+  const TOL = 2; // 엣지 여유값(px)
 
-    const pickTarget = () => {
-      const canvas = document.querySelector('.canvas');
-      if (isMobile() && canvas) return canvas;   // 모바일: .canvas 스크롤
-      return window;                              // 데탑: 문서 스크롤
-    };
+  const pickTarget = () => {
+    const canvas = document.querySelector('.canvas');
+    if (isMobile() && canvas) return canvas;   // 모바일: .canvas 스크롤
+    return window;                              // 데탑: 문서 스크롤
+  };
 
-    const flashEl = document.getElementById('edgeFlash');
-    let lastFlash = 0;
-    const flash = () => {
-      const now = Date.now(); if (now - lastFlash < 300) return;
-      lastFlash = now;
-      flashEl.classList.remove('edge-flash'); void flashEl.offsetWidth; flashEl.classList.add('edge-flash');
-    };
+  const flashEl = document.getElementById('edgeFlash');
+  let lastFlash = 0;
+  const flash = () => {
+    const now = Date.now(); if (now - lastFlash < 300) return;
+    lastFlash = now;
+    flashEl.classList.remove('edge-flash'); void flashEl.offsetWidth; flashEl.classList.add('edge-flash');
+  };
 
-    let target = null, meter = null, prevY = 0, prevX = 0;
+  let target = null, meter = null, prevY = 0, prevX = 0;
+  let jumpLock = false;
+  const lock = (ms=450) => { jumpLock = true; setTimeout(()=> jumpLock=false, ms); };
 
-    function attach(){
-      detach();
-      target = pickTarget();
-      meter = (target === window)
-        ? (document.scrollingElement || document.documentElement)
-        : target;
+  const atTop    = el => el.scrollTop <= TOL;
+  const atBottom = el => el.scrollTop + el.clientHeight >= el.scrollHeight - TOL;
+  const atLeft   = el => el.scrollLeft <= TOL;
+  const atRight  = el => el.scrollLeft + el.clientWidth >= el.scrollWidth - TOL;
 
-      prevY = (target === window) ? (window.pageYOffset || meter.scrollTop) : meter.scrollTop;
-      prevX = meter.scrollLeft;
+  const jumpTop = () => (target===window? window : meter).scrollTo({ top: 0, behavior: 'auto' });
+  const jumpBottom = () => {
+    const y = meter.scrollHeight - meter.clientHeight;
+    (target===window? window : meter).scrollTo({ top: y, behavior: 'auto' });
+  };
 
-      target.addEventListener('scroll', onScroll, { passive: true });
-      if (target === window) {
-        window.addEventListener('wheel', onWheel, { passive: true });
-      } else {
-        target.addEventListener('touchmove', onTouchMove, { passive: true });
-      }
-    }
-    function detach(){
-      if (!target) return;
-      target.removeEventListener('scroll', onScroll);
-      if (target === window) window.removeEventListener('wheel', onWheel);
-      else target.removeEventListener('touchmove', onTouchMove);
-      target = meter = null;
-    }
+  function onScroll(){
+    const y = (target === window) ? (window.pageYOffset || meter.scrollTop) : meter.scrollTop;
+    const x = meter.scrollLeft;
+    const dy = y - prevY;
+    const dx = x - prevX;
+    prevY = y; prevX = x;
 
-    function atTop(el){ return el.scrollTop <= TOL; }
-    function atBottom(el){ return el.scrollTop + el.clientHeight >= el.scrollHeight - TOL; }
-    function atLeft(el){ return el.scrollLeft <= TOL; }
-    function atRight(el){ return el.scrollLeft + el.clientWidth >= el.scrollWidth - TOL; }
+    if (jumpLock) return;
 
-    function jumpTop(){ (target===window? window : meter).scrollTo({ top: 0, behavior: 'auto' }); }
-    function jumpBottom(){
-      const y = meter.scrollHeight - meter.clientHeight;
-      (target===window? window : meter).scrollTo({ top: y, behavior: 'auto' });
+    // === 세로 래핑 ===
+    if (meter.scrollHeight > meter.clientHeight) {
+      // 공통: 바닥에서 더 내리면 → 맨 위
+      if (dy > 0 && atBottom(meter)) { jumpTop(); lock(); }
+      // 데스크톱만: 천장에서 더 올리면 → 맨 아래 (모바일에서는 비활성)
+      else if (!isMobile() && dy < 0 && atTop(meter)) { jumpBottom(); lock(); }
     }
 
-    function onScroll(){
-      const y = (target === window) ? (window.pageYOffset || meter.scrollTop) : meter.scrollTop;
-      const x = meter.scrollLeft;
-      const dy = y - prevY;
-      const dx = x - prevX;
-      prevY = y; prevX = x;
-
-      // 세로 루프 (방향 기반)
-      if (meter.scrollHeight > meter.clientHeight) {
-        if (dy > 0 && atBottom(meter)) jumpTop();      // 아래로 더 → 맨 위
-        else if (dy < 0 && atTop(meter)) jumpBottom(); // 위로 더 → 맨 아래
-      }
-
-      // 좌/우 끝 번쩍
-      if (meter.scrollWidth > meter.clientWidth && dx !== 0) {
-        if (atLeft(meter) || atRight(meter)) flash();
-      }
+    // === 좌우 끝 번쩍 ===
+    if (meter.scrollWidth > meter.clientWidth && dx !== 0) {
+      if (atLeft(meter) || atRight(meter)) flash();
     }
+  }
 
-    function onWheel(e){
-      // 휠로 좌/우 번쩍 보강
-      if (meter.scrollWidth > meter.clientWidth) {
-        const dx = Math.sign(e.deltaX);
-        if ((dx < 0 && atLeft(meter)) || (dx > 0 && atRight(meter))) flash();
-      }
+  function onWheel(e){
+    // 수직 오버스크롤 의도도 휠에서 즉시 처리 (onScroll 안 뜨는 케이스 커버)
+    if (meter.scrollHeight > meter.clientHeight) {
+      if (e.deltaY > 0 && atBottom(meter))      { jumpTop(); lock(); }
+      else if (!isMobile() && e.deltaY < 0 && atTop(meter)) { jumpBottom(); lock(); }
     }
-    function onTouchMove(e){
-      // 터치로 좌/우 번쩍 보강
-      const t = e.touches && e.touches[0];
-      if (!t) return;
-      if (meter.scrollWidth > meter.clientWidth) {
-        // 실제 번쩍은 onScroll에서도 처리되므로 중복 최소화
-        if (atLeft(meter) || atRight(meter)) flash();
-      }
+    // 좌우 번쩍
+    if (meter.scrollWidth > meter.clientWidth) {
+      const dx = Math.sign(e.deltaX);
+      if ((dx < 0 && atLeft(meter)) || (dx > 0 && atRight(meter))) flash();
     }
+  }
 
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attach);
-    else attach();
-    window.addEventListener('resize', attach);
-    window.addEventListener('orientationchange', attach);
-    (mq.addEventListener ? mq.addEventListener('change', attach) : mq.addListener(attach));
-  })();
+  // 모바일 터치: 바닥에서 위로 스와이프 시 즉시 점프 (천장→바닥은 끔)
+  let startY = null;
+  function onTouchStart(e){
+    const t = e.touches && e.touches[0]; if (!t) return;
+    startY = t.clientY;
+  }
+  function onTouchEnd(e){
+    if (startY == null) return;
+    const t = e.changedTouches && e.changedTouches[0]; if (!t) { startY=null; return; }
+    const dy = t.clientY - startY; startY = null;
+    if (jumpLock) return;
+    if (meter.scrollHeight > meter.clientHeight) {
+      if (dy < -8 && atBottom(meter)) { jumpTop(); lock(); } // 모바일은 바닥→맨 위만
+    }
+  }
+
+  function onTouchMove(){
+    // 좌우 번쩍 보강
+    if (meter.scrollWidth > meter.clientWidth) {
+      if (atLeft(meter) || atRight(meter)) flash();
+    }
+  }
+
+  function attach(){
+    detach();
+    target = pickTarget();
+    meter = (target === window)
+      ? (document.scrollingElement || document.documentElement)
+      : target;
+
+    prevY = (target === window) ? (window.pageYOffset || meter.scrollTop) : meter.scrollTop;
+    prevX = meter.scrollLeft;
+
+    target.addEventListener('scroll', onScroll, { passive: true });
+    if (target === window) {
+      window.addEventListener('wheel', onWheel, { passive: true });
+    } else {
+      // 모바일 .canvas에 수직/수평 제스처 바인딩
+      target.addEventListener('touchstart', onTouchStart, { passive: true });
+      target.addEventListener('touchend',   onTouchEnd,   { passive: true });
+      target.addEventListener('touchmove',  onTouchMove,  { passive: true });
+    }
+  }
+  function detach(){
+    if (!target) return;
+    target.removeEventListener('scroll', onScroll);
+    if (target === window) {
+      window.removeEventListener('wheel', onWheel);
+    } else {
+      target.removeEventListener('touchstart', onTouchStart);
+      target.removeEventListener('touchend',   onTouchEnd);
+      target.removeEventListener('touchmove',  onTouchMove);
+    }
+    target = meter = null;
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', attach);
+  else attach();
+  window.addEventListener('resize', attach);
+  window.addEventListener('orientationchange', attach);
+  (mq.addEventListener ? mq.addEventListener('change', attach) : mq.addListener(attach));
+})();
 
   /* ========= 끝 ========= */
 })();
 
-
-/* === TOP/BOTTOM WRAP – edge overscroll 전용 미니 패치 === */
-(function(){
-  const mq = window.matchMedia('(max-width:768px), (pointer:coarse)');
-  const isMobile = () => mq.matches;
-  const TOL = 2;
-
-  function pick(){
-    const c = document.querySelector('.canvas');
-    if (isMobile() && c) return { t:c, m:c }; // 모바일: .canvas
-    const m = document.scrollingElement || document.documentElement;
-    return { t:window, m };                   // 데탑: 문서
-  }
-  const atTop    = m => m.scrollTop <= TOL;
-  const atBottom = m => m.scrollTop + m.clientHeight >= m.scrollHeight - TOL;
-
-  function jumpTop(t,m){ (t===window? window : m).scrollTo({ top:0, behavior:'auto' }); }
-  function jumpBottom(t,m){
-    const y = m.scrollHeight - m.clientHeight;
-    (t===window? window : m).scrollTo({ top:y, behavior:'auto' });
-  }
-
-  // 데스크톱 휠: 가장자리에서 추가 스크롤 시 즉시 점프
-  function onWheel(e){
-    const {t,m} = pick();
-    if (m.scrollHeight <= m.clientHeight + 1) return; // 한 화면이면 무시
-    if (e.deltaY > 0 && atBottom(m))      jumpTop(t,m);     // 아래로 더 → 맨 위
-    else if (e.deltaY < 0 && atTop(m))    jumpBottom(t,m);  // 위로 더 → 맨 아래
-  }
-
-  // 터치: 방향 의도만 판단해 끝에서 점프
-  let startY = null;
-  function onTouchStart(e){
-    const p = e.touches?.[0]; if (!p) return;
-    startY = p.clientY;
-  }
-  function onTouchEnd(e){
-    if (startY == null) return;
-    const p = e.changedTouches?.[0]; if (!p) return;
-    const dy = p.clientY - startY;   // 손가락 ↓(양수)=내용 위로 스크롤, 손가락 ↑(음수)=내용 아래로
-    startY = null;
-
-    const {t,m} = pick();
-    if (m.scrollHeight <= m.clientHeight + 1) return;
-
-    if (dy < -8 && atBottom(m))      jumpTop(t,m);     // 위로 스와이프(내용 아래로) + 바닥
-    else if (dy >  8 && atTop(m))    jumpBottom(t,m);  // 아래로 스와이프(내용 위로) + 천장
-  }
-
-  function bind(){
-    // 데탑: window에 wheel
-    window.addEventListener('wheel', onWheel, { passive:true });
-
-    // 모바일: .canvas가 있으면 그곳에 터치 바인딩, 없으면 window
-    const c = document.querySelector('.canvas');
-    const touchTarget = (isMobile() && c) ? c : window;
-    touchTarget.addEventListener('touchstart', onTouchStart, { passive:true });
-    touchTarget.addEventListener('touchend',   onTouchEnd,   { passive:true });
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
-  else bind();
-  mq.addEventListener ? mq.addEventListener('change', bind) : mq.addListener(bind);
-  window.addEventListener('resize', bind);
-  window.addEventListener('orientationchange', bind);
-})();
 
 </script>
 
