@@ -129,7 +129,7 @@ figcaption {
 
 /* 6) 반응형 */
 @media (max-width: 768px) {
-  .container { padding: 20px 16px; }
+  .container { padding: 20px 0px; }
   figure img { margin: 1.5rem 0; }
   figcaption {
     font-size: 9px;
