@@ -130,24 +130,25 @@ figcaption {
 /* 6) 반응형 */
 @media (max-width: 768px) {
   .container { padding: 20px 0px; }
-  figure img { margin: 1.5rem 0; }
+  figure img { margin: 1.5rem 0; margin-bottom: 3px}
   figcaption {
     font-size: 9px;
   }
   .video-frame.frame-lg { max-width: 100%; }
 }
+@media (max-width: 768px) {
+  .container {
+    padding: 0; /* 좌우 여백 제거 */
+  }
 
-
-
-.two {
-  column-count: 2;          /* 두 개의 칼럼 */
-  column-gap: 60px;         /* 칼럼 간 간격 */
-  column-rule: 1px solid #ccc; /* 칼럼 사이 구분선 (원하면 삭제 가능) */
-  text-align: left;
-  
-  max-width: 900px;         /* 전체 너비 제한 */
-  margin: 0 auto;           /* 중앙 정렬 */
-  padding: 50px 0;          /* 좌우 패딩 제거, 위아래만 유지 */
+  figure { margin: 0; }          /* figure 기본 마진 제거 */
+  figure img {
+    display: block;
+    width: 100%;                 /* ← 100vw 대신 100% */
+    max-width: 100%;
+    height: auto;
+    margin: 10;        /* 이미지 위아래 여백도 최소화 */
+  }
 }
 
 
