@@ -180,8 +180,8 @@ section:target {
 @media (max-width: 768px) {
   /* 시스템 UI를 뺀 실제 뷰포트 높이 사용 (iOS 15+) */
   
-  body {
-    font-size: calc(200vw / 112);   /* body 폰트도 비슷하게 키움 */
+  header {
+    font-size: calc(240vw / 112);   /* body 폰트도 비슷하게 키움 */
     /* 핀치/더블탭 확대 방지 보강 */
     touch-action: manipulation; 
   }
@@ -204,7 +204,7 @@ section:target {
   }
 
   pre {
-    font-size: calc(220vw / 112);   /* = 2x 확대 느낌 */
+    font-size: calc(200vw / 112);   /* = 2x 확대 느낌 */
     line-height: 1.18;              /* 아스키 깨짐 방지 미세 조정 */
     width: max-content;
     margin: 0;                      /* 좌상단부터 탐험 시작 */
