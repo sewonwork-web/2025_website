@@ -122,8 +122,8 @@ figcaption {
 .faces { text-align: left; }
 
 /* 5) 비디오 프레임 (컨테이너로 크기 제어) */
-.video-frame { margin: 2rem 0; }
-.video-frame.frame-sm { max-width: 700px; }
+.video-frame { margin: 2rem auto; }
+.video-frame.frame-sm { width: 700px; }
 .video-frame.frame-lg { max-width: 1200px; } /* 컨테이너는 800px이지만, 내부 비디오가 넘치지 않게 아래 설정 */
 .autoplay-video { width: 100%; height: auto; display: block; }
 

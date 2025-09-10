@@ -181,7 +181,7 @@ section:target {
   /* 시스템 UI를 뺀 실제 뷰포트 높이 사용 (iOS 15+) */
   
   header {
-    font-size: calc(240vw / 112);   /* body 폰트도 비슷하게 키움 */
+    font-size: calc(200vw / 112);   /* body 폰트도 비슷하게 키움 */
     /* 핀치/더블탭 확대 방지 보강 */
     touch-action: manipulation; 
   }
@@ -228,6 +228,28 @@ section:target {
   #popup { pointer-events: none !important; }        /* 배경 터치 통과 */
   #popup img { pointer-events: auto !important; cursor: pointer; }
 
+
+@keyframes fast-blink-effect {
+  0% {
+    color: gold;
+    opacity: 1;
+  }
+  50% {
+    color: gold;
+    background-color: black;
+    opacity: 1;
+  }
+  100% {
+    color: gold;
+    opacity: 1;
+  }
+}
+
+  body{
+    font-family: "Gowun Batang", "Noto Serif KR",
+                   serif;
+  }
+}
 
 }
 
