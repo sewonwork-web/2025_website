@@ -7,51 +7,32 @@
   <meta name="description" content="Sewon Min" />
   <link rel="canonical" href="https://minsewon.com/" />
   <meta name="robots" content="index, follow" />
-
-
-
-
   <link rel="stylesheet" type="text/css" href="style.css">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+    }
 
+    .hero {
+      position: fixed;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+  </style>
 <body>
 <header class="site-header">
   <nav class="nav">
-    <a class="brand" a href="#" class="to-top" rel="noopener">Sewon Min</a>
-
-
+    <a class="brand" href="#" rel="noopener">Sewon Min</a>
     <div class="nav-group">
-      <button id="indexToggle" class="nav-link is-button"
-              aria-haspopup="true" aria-expanded="false" aria-controls="indexDropdown">
-        Index
-      </button>
-
-      <!-- 드롭다운: 텍스트 주변만 흰 박스 -->
-      <div id="indexDropdown" class="dropdown-lite">
-        <ul class="dropdown-list">
-          <li><a href="air/index.html">Air Poetry/Fish Poetry</a></li>
-          <li><a href="face/index.html">Faces of Scattered Love</a></li>
-          <li><a href="river/index.html" target="_blank" rel="noopener noreferrer">
-....................<br>
-....****............<br>
-.**+**.***..........<br>
-..*******...........<br>
-....+**+.........**.<br>
-...****************.<br>
-..*****************.<br>
-..***************+..<br>
-...**************...<br>
-....................<br>
-
-
-</a></li>      
-        </ul>
-      </div>
+      <a class="brand" href="me/index.html" rel="noopener">Index</a>
     </div>
-
   </nav>
 </header>
 
@@ -61,72 +42,75 @@
     <section class="project">
 
       <section class="intro">
-        <p>
-My primary work is writing, peeling off the scales to see what covers me.
-I am covered in soft grey cat hair now(9.2025). I was covered by cactus spines a month ago because they attacked me in Sun Mountain.
-I write poetry and fiction, and make books and maps.
-I studied architecture in Seoul and New York.
-I am always waiting for the text from the future.
-I am in Brooklyn now.
-Contact me: sewon.work@gmail.com
-</p>
+
       </section>
 
   
   </main>
-</body>
+
+<div class="hero"></div>
 
 <script>
-
-  // 스크롤이 맨 아래에 도달하면 맨 위로 이동
-  window.onscroll = function () {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-      window.scrollTo(0, 0);
-    }
-  };
-  // iOS/Safari 호환: muted + playsinline이면 사용자 제스처 없이도 재생 가능
-  const vids = document.querySelectorAll('.autoplay-video');
-
-  // 실제 소스 지연 세팅
-  const ensureSrc = v => {
-    if (!v.dataset.src) return;
-    if (!v.src || v.src === window.location.href) {
-      v.src = v.dataset.src;          // data-src → src
-      v.load();                       // 메타데이터 로드
-    }
-  };
-
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(async (entry) => {
-      const v = entry.target;
-      if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-        ensureSrc(v);                 // 화면에 충분히 보일 때만 로드
-        try { await v.play(); } catch(e) {} // 자동재생 정책 회피(무음이므로 보통 OK)
-      } else {
-        v.pause();
-      }
-    });
-  }, { threshold: [0, 0.5, 1] });
-
-  vids.forEach(v => io.observe(v));
-
-
 document.addEventListener('DOMContentLoaded', () => {
-  const toggle = document.getElementById('indexToggle');
-  const dd     = document.getElementById('indexDropdown');
+  // 1️⃣ 모바일 감지 (userAgent 기준)
+  const ua = navigator.userAgent || navigator.vendor || window.opera;
+  const isMobile =
+    /android/i.test(ua) ||
+    /iphone/i.test(ua) ||
+    /ipod/i.test(ua) ||
+    (/ipad/i.test(ua) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(ua)));
 
-  const open  = () => { dd.hidden = false; toggle.setAttribute('aria-expanded', 'true'); };
-  const close = () => { dd.hidden = true;  toggle.setAttribute('aria-expanded', 'false'); };
-  const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
+  // 2️⃣ 이미지 배열 완전히 분리
+  const desktopImages = [
+    'img/1.jpg',
+    'img/2.jpg',
+    'img/3.png',
+    'img/4.jpg',
+    'img/5.jpg',
+    'img/6.png',
+    'img/7.jpg',
+    'img/8.png',
+    'img/9.png',
+    'img/10.jpg',
+  ];
 
-  toggle.addEventListener('click', (e) => {
-    e.preventDefault();
-    isOpen() ? close() : open();
-  });
+  const mobileImages = [
+    'img/m1.jpg',
+    'img/m2.jpg',
+    'img/3.png',
+    'img/4.jpg',
+    'img/5.jpg',
+    'img/6.png',
+    'img/7.jpg',
+    'img/8.png',
+    'img/9.png',
+    'img/10.jpg',
+  ];
 
+  // 3️⃣ 모바일이면 mobileImages, 아니면 desktopImages 사용
+  const images = isMobile ? mobileImages : desktopImages;
 
+  // 4️⃣ 배경 전환
+  const hero = document.querySelector('.hero');
+  let index = 0;
+
+  hero.style.backgroundImage = `url(${images[index]})`;
+
+  function nextImage() {
+    index = (index + 1) % images.length;
+    const nextSrc = images[index];
+    const preloader = new Image();
+    preloader.src = nextSrc;
+    preloader.onload = () => {
+      hero.style.backgroundImage = `url(${nextSrc})`;
+    };
+  }
+
+  setInterval(nextImage, 2500);
+});
 </script>
-
-
-
+  
 </body>
+
+
+
