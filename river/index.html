@@ -1272,24 +1272,7 @@ _{?`,,/~|t?~,"-jttt/\///\t/);i/"l"/(:.-_-;1:[I;,/:{;:]+)/;I'^...`~":)tixz?,+~~:"
   const mq = window.matchMedia('(max-width:768px), (pointer:coarse)');
   const isMobile = () => mq.matches;
 
-  /* ========= 좌/우 끝 번쩍: CSS/엘리먼트 보장 ========= */
-  (function ensureEdgeFlash(){
-    if (!document.getElementById('edgeFlashCSS')) {
-      const style = document.createElement('style');
-      style.id = 'edgeFlashCSS';
-      style.textContent = `
-        #edgeFlash{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:9998;}
-        .edge-flash{animation:edge-flash .18s ease-out both;}
-        @keyframes edge-flash{0%{opacity:0}40%{opacity:.55}100%{opacity:0}}
-      `;
-      document.head.appendChild(style);
-    }
-    if (!document.getElementById('edgeFlash')) {
-      const flashEl = document.createElement('div');
-      flashEl.id = 'edgeFlash';
-      document.body.appendChild(flashEl);
-    }
-  })();
+
 
   /* ========= 팝업: 열기/닫기 + 모바일 닫기 ========= */
   document.addEventListener('DOMContentLoaded', () => {
@@ -1413,6 +1396,11 @@ _{?`,,/~|t?~,"-jttt/\///\t/);i/"l"/(:.-_-;1:[I;,/:{;:]+)/;I'^...`~":)tixz?,+~~:"
       else if (!isMobile() && dy < 0 && atTop(meter)) { jumpBottom(); lock(); }
     }
 
+    // === 좌우 끝 번쩍 ===
+    if (meter.scrollWidth > meter.clientWidth && dx !== 0) {
+      if (atLeft(meter) || atRight(meter)) flash();
+    }
+  }
 
   function onWheel(e){
     // 수직 오버스크롤 의도도 휠에서 즉시 처리 (onScroll 안 뜨는 케이스 커버)
@@ -1420,6 +1408,12 @@ _{?`,,/~|t?~,"-jttt/\///\t/);i/"l"/(:.-_-;1:[I;,/:{;:]+)/;I'^...`~":)tixz?,+~~:"
       if (e.deltaY > 0 && atBottom(meter))      { jumpTop(); lock(); }
       else if (!isMobile() && e.deltaY < 0 && atTop(meter)) { jumpBottom(); lock(); }
     }
+    // 좌우 번쩍
+    if (meter.scrollWidth > meter.clientWidth) {
+      const dx = Math.sign(e.deltaX);
+      if ((dx < 0 && atLeft(meter)) || (dx > 0 && atRight(meter))) flash();
+    }
+  }
 
   // 모바일 터치: 바닥에서 위로 스와이프 시 즉시 점프 (천장→바닥은 끔)
   let startY = null;
