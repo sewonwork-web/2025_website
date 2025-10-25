@@ -1413,11 +1413,6 @@ _{?`,,/~|t?~,"-jttt/\///\t/);i/"l"/(:.-_-;1:[I;,/:{;:]+)/;I'^...`~":)tixz?,+~~:"
       else if (!isMobile() && dy < 0 && atTop(meter)) { jumpBottom(); lock(); }
     }
 
-    // === 좌우 끝 번쩍 ===
-    if (meter.scrollWidth > meter.clientWidth && dx !== 0) {
-      if (atLeft(meter) || atRight(meter)) flash();
-    }
-  }
 
   function onWheel(e){
     // 수직 오버스크롤 의도도 휠에서 즉시 처리 (onScroll 안 뜨는 케이스 커버)
@@ -1425,12 +1420,6 @@ _{?`,,/~|t?~,"-jttt/\///\t/);i/"l"/(:.-_-;1:[I;,/:{;:]+)/;I'^...`~":)tixz?,+~~:"
       if (e.deltaY > 0 && atBottom(meter))      { jumpTop(); lock(); }
       else if (!isMobile() && e.deltaY < 0 && atTop(meter)) { jumpBottom(); lock(); }
     }
-    // 좌우 번쩍
-    if (meter.scrollWidth > meter.clientWidth) {
-      const dx = Math.sign(e.deltaX);
-      if ((dx < 0 && atLeft(meter)) || (dx > 0 && atRight(meter))) flash();
-    }
-  }
 
   // 모바일 터치: 바닥에서 위로 스와이프 시 즉시 점프 (천장→바닥은 끔)
   let startY = null;
