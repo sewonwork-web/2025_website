@@ -110,8 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
       hero.style.backgroundImage = `url(${nextSrc})`;
     };
   }
-
-  setInterval(nextImage, 1400);
+const intervalTime = isMobile ? 1000 : 2000; 
+setInterval(nextImage, intervalTime);
 });
 </script>
   
