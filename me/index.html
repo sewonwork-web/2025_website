@@ -42,10 +42,10 @@
 ..*****************.<br>
 ..***************+..<br>
 ...**************...<br>
-....................<br>
-
-
-</a></li>      
+....................<br></a></li>
+<br>
+<br>
+<li><a href="#" id="openVideo">☆</a></li>      
         </ul>
       </div>
     </div>
@@ -69,61 +69,95 @@ Contact me: sewon.work@gmail.com
 </p>
       </section>
 
+
+
+<!-- 2️⃣ 오버레이 (모든 화면 위에 표시) -->
+<div id="videoOverlay" style="
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  backdrop-filter: blur(3px);
+">
+  <!-- 비디오 컨테이너 -->
+  <div style="
+    position: relative;
+    width: 80%;
+    max-width: 1200px;
+    aspect-ratio: 16/9;
+    background: #000;
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+  ">
+    <!-- 닫기 버튼 -->
+    <button id="closeVideo" style="
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255,255,255,0.85);
+      border: none;
+      font-size: 14px;
+      padding: 6px 10px;
+      cursor: pointer;
+    ">close</button>
+
+    <!-- Vimeo iframe -->
+    <iframe
+      id="vimeoFrame"
+      src="https://vimeo.com/1130804441?autoplay=1&muted=0&title=0&byline=0&portrait=0"
+      style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      "
+      allow="autoplay; fullscreen; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+</div>
   
   </main>
 </body>
 
+
+
+<!-- 3️⃣ 스크립트 -->
 <script>
+  const openLink = document.getElementById('openVideo');
+  const overlay  = document.getElementById('videoOverlay');
+  const closeBtn = document.getElementById('closeVideo');
+  const frame    = document.getElementById('vimeoFrame');
 
-  // 스크롤이 맨 아래에 도달하면 맨 위로 이동
-  window.onscroll = function () {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-      window.scrollTo(0, 0);
-    }
-  };
-  // iOS/Safari 호환: muted + playsinline이면 사용자 제스처 없이도 재생 가능
-  const vids = document.querySelectorAll('.autoplay-video');
+  const originalSrc = frame.getAttribute('src');
 
-  // 실제 소스 지연 세팅
-  const ensureSrc = v => {
-    if (!v.dataset.src) return;
-    if (!v.src || v.src === window.location.href) {
-      v.src = v.dataset.src;          // data-src → src
-      v.load();                       // 메타데이터 로드
-    }
-  };
-
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(async (entry) => {
-      const v = entry.target;
-      if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
-        ensureSrc(v);                 // 화면에 충분히 보일 때만 로드
-        try { await v.play(); } catch(e) {} // 자동재생 정책 회피(무음이므로 보통 OK)
-      } else {
-        v.pause();
-      }
-    });
-  }, { threshold: [0, 0.5, 1] });
-
-  vids.forEach(v => io.observe(v));
-
-
-document.addEventListener('DOMContentLoaded', () => {
-  const toggle = document.getElementById('indexToggle');
-  const dd     = document.getElementById('indexDropdown');
-
-  const open  = () => { dd.hidden = false; toggle.setAttribute('aria-expanded', 'true'); };
-  const close = () => { dd.hidden = true;  toggle.setAttribute('aria-expanded', 'false'); };
-  const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
-
-  toggle.addEventListener('click', (e) => {
+  openLink.addEventListener('click', function(e) {
     e.preventDefault();
-    isOpen() ? close() : open();
+    overlay.style.display = 'flex';
+    frame.setAttribute('src', originalSrc);
   });
 
+  function closeOverlay() {
+    overlay.style.display = 'none';
+    frame.setAttribute('src', "");          // 재생 중지
+    frame.setAttribute('src', originalSrc); // 다음에 다시 열면 재생 가능
+  }
 
+  closeBtn.addEventListener('click', closeOverlay);
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+      closeOverlay();
+    }
+  });
 </script>
-
 
 
 </body>
