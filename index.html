@@ -54,6 +54,7 @@
   </div>
 <div class="hero"></div>
 
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   // 1️⃣ 모바일 감지 (userAgent 기준)
@@ -68,13 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const desktopImages = [
     'img/1.jpg',
     'img/2.jpg',
-    'img/3.png',
-    'img/4.jpg',
-    'img/5.jpg',
     'img/6.png',
-    'img/7.jpg',
-    'img/8.jpg',
-    'img/9.jpg',
     'img/10.jpg',
   ];
 
@@ -82,14 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
     'img/m1.jpg',
     'img/m2.jpg',      
     'img/m3.jpg',
-    'img/3.png',
-    'img/4.jpg',
-    'img/5.jpg',
     'img/6.png',
-    'img/7.jpg',
-    'img/8.jpg',
-    'img/m9.jpg',
     'img/10.jpg',
+ 
   ];
 
   // 3️⃣ 모바일이면 mobileImages, 아니면 desktopImages 사용
@@ -114,6 +104,7 @@ const intervalTime = isMobile ? 1000 : 2000;
 setInterval(nextImage, intervalTime);
 });
 </script>
+
   
 </body>
 
